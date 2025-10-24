@@ -1,0 +1,21 @@
+{
+  "name": "obscura",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "Ashish Sharma",
+  "type": "commonjs",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon app.js"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "multer": "^2.0.2"
+  }
+}

@@ -65,7 +65,8 @@ function show(rawBuffer) {
     }
     messageBuffer[i] = charByte;
   }
-
+//   console.log("from the decrypt function --> "+messageBuffer.toString("utf8"));
+  
   return messageBuffer.toString("utf8");
 }
 

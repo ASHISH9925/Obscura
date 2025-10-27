@@ -6,6 +6,6 @@ const { processFile } = require("../controllers/Decode.js");
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-router.post("/decode", upload.single("encryptedFile"), processFile);
+router.post("/decode", upload.single("file"), processFile);
 
 module.exports = router;

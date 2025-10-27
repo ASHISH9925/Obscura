@@ -1,12 +1,21 @@
 const fs = require("fs");
 const crypto = require("crypto");
+const { uploadFile } = require("./FileHandlers");
+const { getEncryptImage } = require("./ImageSteganography");
 
+/**
+ * Pack filename, MIME type, and file bytes into a single buffer.
+ * Format: <name>\n<mime>\n<bytes>
+ * @param {string} originalName
+ * @param {string} mimeType
+ * @param {Buffer} fileBuffer
+ * @returns {Buffer}
+ */
 function encodeFileToBinary(originalName, mimeType, fileBuffer) {
   const nameBuffer = Buffer.from(originalName, "utf8");
   const mimeBuffer = Buffer.from(mimeType, "utf8");
   const newline = Buffer.from("\n", "utf8");
 
-  // Concatenate all parts with newlines
   const result = Buffer.concat([
     nameBuffer,
     newline,
@@ -18,19 +27,18 @@ function encodeFileToBinary(originalName, mimeType, fileBuffer) {
   return result;
 }
 
+/**
+ * Encrypt a buffer using AES-256-GCM with a random key and IV.
+ * Output: 12-byte IV | ciphertext | 16-byte auth tag
+ * @param {Buffer} data
+ * @returns {{ key: Buffer, encryptedData: Buffer }}
+ */
 function encryptBinaryData(data) {
-  // Generate a random 256-bit (32 bytes) encryption key
   const key = crypto.randomBytes(32);
-  // Generate a random 96-bit (12 bytes) initialization vector
   const iv = crypto.randomBytes(12);
-  // Create cipher
   const cipher = crypto.createCipheriv("aes-256-gcm", key, iv);
-  // Encrypt the data
   const encrypted = Buffer.concat([cipher.update(data), cipher.final()]);
-  // Get the authentication tag (16 bytes)
   const authTag = cipher.getAuthTag();
-  // Combine IV + encrypted data + auth tag into single buffer
-  // This format makes decryption easier as everything is in one package
   const encryptedData = Buffer.concat([iv, encrypted, authTag]);
 
   return {
@@ -39,6 +47,14 @@ function encryptBinaryData(data) {
   };
 }
 
+/**
+ * Express handler to encode and encrypt an uploaded file, hide the AES key in a PNG,
+ * upload the encrypted bytes, and return the file ID with the key image.
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ * @returns {Promise<void>}
+ */
 const processFile = async (req, res, next) => {
   if (!req.file) {
     return res
@@ -50,10 +66,10 @@ const processFile = async (req, res, next) => {
     const originalFileName = req.file.originalname;
     const mimeType = req.file.mimetype;
 
-    if (inputFileBuffer.length > 100000000) {
+    if (inputFileBuffer.length > (15 * 1024 * 1024)) {
       return res.status(400).json({
         message:
-          "The entered file was larger than 100mb please try a smaller file",
+          "File size must be under 15MB due to MongoDB storage limits",
       });
     }
 
@@ -62,17 +78,24 @@ const processFile = async (req, res, next) => {
       mimeType,
       inputFileBuffer
     );
+
     const processedFileBuffer = encryptBinaryData(binary_file);
-    const encryptedFileName = `encrypted-${originalFileName}.txt`;
+    
+    const keyAsHexString = processedFileBuffer.key.toString('hex');
+    const imageBuffer = await getEncryptImage(keyAsHexString);
 
-    res.setHeader(
-      "Content-Disposition",
-      `attachment; filename="${encryptedFileName}"`
-    );
-    res.setHeader("Content-Type", "application/octet-stream");
-    res.send(processedFileBuffer.encryptedData);
+    const stegoImageBase64 = `data:image/png;base64,${imageBuffer.toString('base64')}`;
+    
+    const fileId = await uploadFile(processedFileBuffer.encryptedData);
 
-    console.log(processedFileBuffer.key.toString("hex"));
+    res.status(200).json({
+        message: "File successfully encrypted and key hidden!",
+        fileId: fileId,
+        accessUrl: `/file/${fileId}`, 
+        keyImageDataUrl: stegoImageBase64,
+        keyImageName: "your-secret-key-file.png"
+    });
+
   } catch (error) {
     console.error("An error occurred during file processing:", error);
     next(error);

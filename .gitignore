@@ -48,9 +48,6 @@ temp/
 .rts2_cache_es/
 .rts2_cache_umd/
 
-# ---- TypeScript ----
-*.tsbuildinfo
-
 # ---- Environment files ----
 .env
 .env.*
@@ -95,3 +92,5 @@ data/
 # package-lock.json
 # yarn.lock
 # pnpm-lock.yaml
+
+/test

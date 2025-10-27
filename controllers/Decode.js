@@ -1,11 +1,13 @@
 const crypto = require("crypto");
+const { decryptImage } = require("./ImageSteganography"); 
+const { retrieveFile } = require("./FileHandlers");
 
 /**
- * Decrypts a Buffer using AES-256-GCM.
- * It expects the key and a single buffer containing the IV, encrypted data, and auth tag.
- * @param {Buffer} key - The 32-byte encryption key.
- * @param {Buffer} encryptedData - The buffer containing IV + encrypted content + auth tag.
- * @returns {Buffer} The decrypted data.
+ * Decrypts a Buffer formatted as IV|ciphertext|authTag using AES-256-GCM.
+ * @param {Buffer} key - 32-byte AES key.
+ * @param {Buffer} encryptedData - Buffer formatted as 12-byte IV | ciphertext | 16-byte auth tag.
+ * @returns {Buffer} Decrypted plaintext.
+ * @throws {Error} If authentication fails or key/IV are invalid.
  */
 function decryptBinaryData(key, encryptedData) {
   const iv = encryptedData.slice(0, 12);
@@ -24,6 +26,12 @@ function decryptBinaryData(key, encryptedData) {
   return decrypted;
 }
 
+/**
+ * Decodes a buffer in the format: <name>\n<mime>\n<bytes>.
+ * @param {Buffer} data - The combined, decrypted file buffer.
+ * @returns {{ originalName: string, mimeType: string, fileBuffer: Buffer }}
+ * @throws {Error} If expected separators are missing.
+ */
 function decodeBinaryToFile(data) {
   const newlineChar = Buffer.from("\n", "utf8")[0];
 
@@ -48,35 +56,44 @@ function decodeBinaryToFile(data) {
   };
 }
 
+/**
+ * Express handler to retrieve an encrypted file, extract the AES key from a key-image,
+ * decrypt the file, and return the original file as a download.
+ * @param {import('express').Request} req - Expects req.body.fileUrl and an uploaded image as req.file.
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
+ * @returns {Promise<void>}
+ */
 const processFile = async (req, res, next) => {
-  console.log("File dec controller has been hit!");
+  // console.log("File decode controller has been hit!");
 
-  if (!req.file) {
-    return res.status(400).json({ message: "No encrypted file was uploaded." });
+  if (!req.body.fileUrl) {
+    return res.status(400).json({ message: "The file URL is missing." });
   }
-  if (!req.body.key) {
-    return res.status(400).json({ message: "Encryption key is missing." });
+  if (!req.file) {
+    return res.status(400).json({ message: "No key-image was uploaded." });
   }
 
   try {
-    const encryptedFileBuffer = req.file.buffer;
-    const keyHex = req.body.key; // The key is expected as a hex string from the form field
-
-    // More validation: Check if the key is a valid hex string of the correct length (32 bytes = 64 hex chars)
-    if (keyHex.length !== 64 || !/^[0-9a-fA-F]+$/.test(keyHex)) {
-      return res
-        .status(400)
-        .json({
-          message: "Invalid key format. Please provide a 64-character hex key.",
-        });
+    const fileId = req.body.fileUrl.split('/').pop();
+    const imageBuffer = req.file.buffer;
+    const { aesKey } = await decryptImage(imageBuffer);
+    const keyBuffer = Buffer.from(aesKey, "hex"); 
+    
+ 
+    const encryptedFileDoc = await retrieveFile(fileId);
+    
+    if (!encryptedFileDoc || !encryptedFileDoc.data) {
+        throw new Error('File not found or is empty.');
     }
+    const encryptedFileBuffer = encryptedFileDoc.data;
 
-    // Convert the hex key string back into a Buffer for the crypto functions
-    const keyBuffer = Buffer.from(keyHex, "hex");
 
     const decryptedData = decryptBinaryData(keyBuffer, encryptedFileBuffer);
 
+
     const originalFile = decodeBinaryToFile(decryptedData);
+
 
     res.setHeader(
       "Content-Disposition",
@@ -84,21 +101,28 @@ const processFile = async (req, res, next) => {
     );
     res.setHeader("Content-Type", originalFile.mimeType);
 
-    // Send the original file's binary data back to the user.
     res.send(originalFile.fileBuffer);
+
   } catch (error) {
     console.error("An error occurred during file decoding:", error.message);
 
-    // Provide a more user-friendly error for common decryption failures.
+    if (error.message.includes("File not found")) {
+        return res.status(404).json({ message: "The encrypted file could not be found." });
+    }
+    if (error.message.includes("Invalid file ID format")) {
+        return res.status(400).json({ message: "The provided file ID is invalid." });
+    }
     if (
-      error.message.includes("Unsupported state") ||
-      error.message.includes("auth")
+      error.message.includes("Unsupported state") || // crypto error
+      error.message.includes("auth") || // crypto error
+      error.message.includes("Invalid message length") || // stego error
+      error.message.includes("Invalid key length") // crypto error
     ) {
       return res
         .status(400)
         .json({
           message:
-            "Decryption failed. The key may be incorrect or the file may be corrupt.",
+            "Decryption failed. The key-image may be incorrect or the file may be corrupt.",
         });
     }
 
@@ -111,3 +135,4 @@ module.exports = {
   decryptBinaryData,
   decodeBinaryToFile,
 };
+

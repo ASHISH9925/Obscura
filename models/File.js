@@ -5,6 +5,10 @@ const fileSchema = new mongoose.Schema({
         type: Buffer,
         required: true
     },
+    mimetype: {
+        type: String,
+        required: true
+    },
     uploadedAt: {
         type: Date,
         default: Date.now

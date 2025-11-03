@@ -86,7 +86,7 @@ const processFile = async (req, res, next) => {
 
     const stegoImageBase64 = `data:image/png;base64,${imageBuffer.toString('base64')}`;
     
-    const fileId = await uploadFile(processedFileBuffer.encryptedData);
+    const fileId = await uploadFile(processedFileBuffer.encryptedData, mimeType);
 
     res.status(200).json({
         message: "File successfully encrypted and key hidden!",

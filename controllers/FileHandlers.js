@@ -3,12 +3,14 @@ const File = require('../models/File.js');
 /**
  * Saves a file buffer and its metadata to the database.
  * @param {Buffer} fileBuffer - The buffer of the file to save.
+ * @param {string} mimetype - The MIME type of the file.
  * @returns {string} The ID of the newly created file document.
  */
-async function uploadFile(fileBuffer) {
+async function uploadFile(fileBuffer, mimetype) {
     try {
         const newFile = new File({
-            data: fileBuffer
+            data: fileBuffer,
+            mimetype: mimetype
         });
 
         await newFile.save();

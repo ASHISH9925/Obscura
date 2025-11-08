@@ -5,14 +5,16 @@ const fileSchema = new mongoose.Schema({
         type: Buffer,
         required: true
     },
-    mimetype: {
-        type: String,
-        required: true
-    },
     uploadedAt: {
         type: Date,
         default: Date.now
+    },
+    expiresAt: {
+        type: Date,
+        required: true
     }
 });
+
+fileSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 module.exports = mongoose.model('File', fileSchema);

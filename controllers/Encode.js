@@ -61,10 +61,20 @@ const processFile = async (req, res, next) => {
       .status(400)
       .json({ message: "No file was uploaded. Please select a file." });
   }
+  if (!req.body.expiryMinutes) {
+    return res.status(400).json({ message: "The expiry time is missing." });
+  }
   try {
     const inputFileBuffer = req.file.buffer;
     const originalFileName = req.file.originalname;
     const mimeType = req.file.mimetype;
+   
+    const expiryMinutes = Number(req.body.expiryMinutes);
+    if (!Number.isFinite(expiryMinutes) || expiryMinutes <= 0) {
+      return res.status(400).json({ message: "The expiry time must be a positive number (minutes)." });
+    }
+
+    const expiresAt = new Date(Date.now() + expiryMinutes * 60 * 1000);
 
     if (inputFileBuffer.length > (15 * 1024 * 1024)) {
       return res.status(400).json({
@@ -86,7 +96,7 @@ const processFile = async (req, res, next) => {
 
     const stegoImageBase64 = `data:image/png;base64,${imageBuffer.toString('base64')}`;
     
-    const fileId = await uploadFile(processedFileBuffer.encryptedData, mimeType);
+    const fileId = await uploadFile(processedFileBuffer.encryptedData, mimeType, expiresAt);
 
     res.status(200).json({
         message: "File successfully encrypted and key hidden!",

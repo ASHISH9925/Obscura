@@ -1,27 +1,17 @@
-const File = require('../models/File');
+const EncryptionAnalytics = require('../models/EncryptionAnalytics');
 
 const getFileTypeStats = async (req, res) => {
     try {
-        const stats = await File.aggregate([
-            {
-                $group: {
-                    _id: '$mimetype',
-                    count: { $sum: 1 }
-                }
-            },
-            {
-                $sort: { count: -1 }
-            }
+        // Aggregate and return mimetype as fileType along with count, sorted by count desc
+        const stats = await EncryptionAnalytics.aggregate([
+            { $sort: { count: -1 } },
+            { $project: { _id: 0, fileType: '$mimetype', count: 1 } }
         ]);
-        
-        const formattedStats = stats.map(stat => ({
-            fileType: stat._id,
-            count: stat.count
-        }));
 
+        // Ensure response shape is consistent
         res.json({
             success: true,
-            data: formattedStats
+            data: stats // already in the form [{ fileType, count }, ...]
         });
     } catch (error) {
         console.error('Error fetching file type stats:', error);

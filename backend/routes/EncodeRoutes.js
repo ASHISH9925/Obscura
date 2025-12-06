@@ -6,6 +6,6 @@ const processFile = require("../controllers/Encode.js");
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-router.post("/encode", upload.single("file"), processFile);
+router.post("/api/encode", upload.single("file"), processFile);
 
 module.exports = router;

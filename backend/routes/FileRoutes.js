@@ -3,6 +3,6 @@ const {retrieveSingleTextFile} = require("../controllers/FileHandlers");
 
 const router = express.Router();
 
-router.get("/file/:id", retrieveSingleTextFile);
+router.get("/api/file/:id", retrieveSingleTextFile);
 
 module.exports = router;

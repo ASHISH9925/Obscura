@@ -64,11 +64,11 @@ export default function EncryptPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white pt-24 pb-16 relative overflow-hidden">
+    <div className="min-h-screen bg-black text-white pt-20 pb-16 relative overflow-hidden">
       <div className="absolute inset-0">
         <BackgroundBeams className="opacity-60" />
       </div>
-      <div className="max-w-4xl mx-auto px-6 relative z-20">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-20">
         <div className="text-center mb-12">
           <div className="inline-block mb-4">
             <div className="relative">
@@ -76,12 +76,12 @@ export default function EncryptPage() {
               <Lock className="w-16 h-16 text-cyan-400 relative" />
             </div>
           </div>
-          <h1 className="text-5xl font-bold mb-4">
+          <h1 className="text-3xl sm:text-5xl font-bold mb-4">
             <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
               Encrypt File
             </span>
           </h1>
-          <p className="text-gray-400 text-lg">
+          <p className="text-gray-400 text-base sm:text-lg">
             Upload your file and receive a key-image for decryption
           </p>
         </div>
@@ -95,18 +95,17 @@ export default function EncryptPage() {
 
             {file && (
               <div className="space-y-6 animate-in">
-                <div className="bg-gradient-to-br from-gray-900 to-black border border-gray-800 rounded-2xl p-6 transform hover:scale-105 transition-all duration-300 hover:border-cyan-500/50 hover:shadow-xl hover:shadow-cyan-500/10">
-                  <div className="flex items-center gap-4">
-                    <div className="bg-cyan-500/20 p-3 rounded-lg group-hover:bg-cyan-500/30 transition-colors duration-300">
+                <div className="bg-gradient-to-br from-gray-900 to-black border border-gray-800 rounded-2xl p-4 sm:p-6 transform hover:scale-105 transition-all duration-300 hover:border-cyan-500/50 hover:shadow-xl hover:shadow-cyan-500/10">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                    <div className="bg-cyan-500/20 p-3 rounded-lg flex-shrink-0">
                       <FileText className="w-8 h-8 text-cyan-400" />
                     </div>
-                    <div className="flex-1">
-                      <p className="text-white font-medium text-lg">{file.name}</p>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white font-medium text-base sm:text-lg truncate">{file.name}</p>
                       <p className="text-gray-400 text-sm">{formatFileSize(file.size)}</p>
                     </div>
-                    <div className="flex items-center gap-2">
-                      {/* Dropdown component for expiry selection */}
-                      <div className="inline-block">
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                      <div className="sm:inline-block">
                         {/* lazy-load the Dropdown to keep markup simple */}
                         <Dropdown value={expiryMinutes} onChange={setExpiryMinutes} />
                       </div>
@@ -114,7 +113,7 @@ export default function EncryptPage() {
                     <button
                       onClick={handleEncrypt}
                       disabled={loading}
-                      className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl font-bold hover:from-cyan-600 hover:to-blue-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 transform hover:scale-105"
+                      className="w-full sm:w-auto mt-2 sm:mt-0 px-4 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl font-bold hover:from-cyan-600 hover:to-blue-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/30 hover:shadow-cyan-500/50 transform hover:scale-105 text-sm sm:text-base whitespace-nowrap"
                     >
                       {loading ? (
                         <>
@@ -131,7 +130,7 @@ export default function EncryptPage() {
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-gray-900 to-black border border-gray-800 rounded-2xl p-6">
+                <div className="bg-gradient-to-br from-gray-900 to-black border border-gray-800 rounded-2xl p-4 sm:p-6">
                   <div className="flex items-start gap-4">
                     <div className="bg-blue-500/20 p-3 rounded-lg">
                       <Shield className="w-6 h-6 text-blue-400" />

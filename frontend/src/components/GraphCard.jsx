@@ -51,7 +51,7 @@ export default function GraphCard() {
 
   return (
     <CardContainer className="inter-var">
-      <CardBody className="bg-gradient-to-br from-gray-900/95 via-blue-950/95 to-gray-900/95 relative group/card border-white/[0.2] sm:w-[34rem] h-auto rounded-xl p-8 border backdrop-blur-sm min-h-[32rem] pb-16">
+      <CardBody className="bg-gradient-to-br from-gray-900/95 via-blue-950/95 to-gray-900/95 relative group/card border-white/[0.2] w-full sm:w-[34rem] h-auto rounded-xl p-6 sm:p-8 border backdrop-blur-sm min-h-[20rem] sm:min-h-[32rem] pb-12 sm:pb-16">
         <CardItem
           translateZ="50"
           className="text-2xl font-bold text-white mb-6"

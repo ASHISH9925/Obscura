@@ -61,11 +61,11 @@ export default function DecryptPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white pt-24 pb-16 relative overflow-hidden">
+    <div className="min-h-screen bg-black text-white pt-20 pb-28 sm:pb-16 relative overflow-hidden">
       <div className="absolute inset-0">
         <BackgroundBeams className="opacity-40" />
       </div>
-      <div className="max-w-4xl mx-auto px-6 relative z-20">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-20">
         <div className="text-center mb-12">
           <div className="inline-block mb-4">
             <div className="relative">
@@ -73,19 +73,19 @@ export default function DecryptPage() {
               <Unlock className="w-16 h-16 text-purple-400 relative" />
             </div>
           </div>
-          <h1 className="text-5xl font-bold mb-4">
+          <h1 className="text-3xl sm:text-5xl font-bold mb-4">
             <span className="bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
               Decrypt File
             </span>
           </h1>
-          <p className="text-gray-400 text-lg">
+          <p className="text-gray-400 text-base sm:text-lg">
             Retrieve your original file using the File ID and Key Image
           </p>
         </div>
 
         {!success ? (
           <div className="space-y-6">
-            <div className="bg-gradient-to-br from-gray-900 to-black border border-gray-800 rounded-2xl p-6 transform hover:scale-105 transition-all duration-300">
+            <div className="bg-gradient-to-br from-gray-900 to-black border border-gray-800 rounded-2xl p-4 sm:p-6 transform hover:scale-105 transition-all duration-300">
               <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                 <FileText className="w-6 h-6 text-purple-400" />
                 File URL
@@ -102,7 +102,7 @@ export default function DecryptPage() {
               </p>
             </div>
 
-            <div className="bg-gradient-to-br from-gray-900 to-black border border-gray-800 rounded-2xl p-6 transform hover:scale-105 transition-all duration-300">
+            <div className="bg-gradient-to-br from-gray-900 to-black border border-gray-800 rounded-2xl p-4 sm:p-6 transform hover:scale-105 transition-all duration-300">
               <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
                 <Key className="w-6 h-6 text-purple-400" />
                 Key File
@@ -123,7 +123,7 @@ export default function DecryptPage() {
             <button
               onClick={handleDecrypt}
               disabled={loading || !fileUrl || !file}
-              className="w-full px-6 py-4 bg-gradient-to-r from-purple-500 to-pink-600 rounded-xl font-bold text-lg hover:from-purple-600 hover:to-pink-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 flex items-center justify-center gap-2 shadow-lg shadow-purple-500/50"
+              className="w-full px-6 py-3 sm:py-4 bg-gradient-to-r from-purple-500 to-pink-600 rounded-xl font-bold text-base sm:text-lg hover:from-purple-600 hover:to-pink-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 flex items-center justify-center gap-2 shadow-lg shadow-purple-500/50"
             >
               {loading ? (
                 <>

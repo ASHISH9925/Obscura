@@ -42,17 +42,17 @@ export default function IntroPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-black text-white pt-24 pb-16 relative overflow-hidden">
+    <div className="min-h-screen bg-black text-white pt-28 sm:pt-24 pb-16 relative overflow-hidden">
       <div className="absolute inset-0">
         <BackgroundBeams className="opacity-40" />
       </div>
-      <div className="max-w-9xl mx-auto px-6 relative z-10">
+      <div className="max-w-9xl mx-auto px-4 sm:px-6 relative z-10">
         <div className="text-center mb-20">
           <div className="inline-block mb-6">
-              <div className="relative">
+            <div className="relative">
               <div className="absolute inset-0 bg-cyan-500/30 blur-3xl" />
-              {/* slightly larger shield for stronger visual presence */}
-              <Shield className="w-36 h-36 md:w-48 md:h-48 text-cyan-400 relative animate-pulse" />
+              {/* scaled down on phones to preserve vertical space */}
+              <Shield className="w-24 h-24 sm:w-36 sm:h-36 md:w-48 md:h-48 text-cyan-400 relative animate-pulse" />
             </div>
           </div>
 
@@ -91,13 +91,13 @@ export default function IntroPage() {
             Just upload, encrypt, and download your key-image.
           </p>
 
-          <div className="flex gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link
               to="/encrypt"
-              className="group relative px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl font-bold text-lg overflow-hidden transform hover:scale-105 transition-all duration-300 shadow-lg shadow-cyan-500/50 hover:shadow-cyan-500/70"
+              className="group relative w-full sm:w-auto mb-2 sm:mb-0 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl font-bold text-base sm:text-lg overflow-hidden transform hover:scale-105 transition-all duration-300 shadow-lg shadow-cyan-500/50 hover:shadow-cyan-500/70"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <span className="relative flex items-center gap-2">
+              <span className="relative flex items-center gap-2 justify-center sm:justify-start">
                 <Lock className="w-5 h-5" />
                 Start Encrypting
               </span>
@@ -105,9 +105,9 @@ export default function IntroPage() {
 
             <Link
               to="/decrypt"
-              className="px-8 py-4 bg-gray-800/50 border border-gray-700 hover:border-cyan-500 rounded-xl font-bold text-lg transform hover:scale-105 transition-all duration-300"
+              className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 bg-gray-800/50 border border-gray-700 hover:border-cyan-500 rounded-xl font-bold text-base sm:text-lg transform hover:scale-105 transition-all duration-300"
             >
-              <span className="flex items-center gap-2">
+              <span className="flex items-center gap-2 justify-center">
                 <Eye className="w-5 h-5" />
                 Decrypt File
               </span>
@@ -115,7 +115,7 @@ export default function IntroPage() {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
           {features.map((feature, index) => (
             <motion.div
               key={index}
@@ -124,7 +124,7 @@ export default function IntroPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="group/canvas-card relative bg-gradient-to-br from-gray-900 to-black border border-gray-800 rounded-2xl p-6 hover:border-gray-700 transition-all duration-500 overflow-hidden cursor-pointer h-auto min-h-[20rem] md:min-h-[22rem] lg:min-h-[24rem]"
+              className="group/canvas-card relative bg-gradient-to-br from-gray-900 to-black border border-gray-800 rounded-2xl p-4 sm:p-6 hover:border-gray-700 transition-all duration-500 overflow-hidden cursor-pointer h-auto min-h-[12rem] sm:min-h-[20rem] md:min-h-[22rem] lg:min-h-[24rem]"
             >
               <AnimatePresence>
                 {hoveredFeature === index && (

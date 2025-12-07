@@ -8,6 +8,8 @@ const express = require("express");
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path')
+const helmet = require("helmet");
+
 
 dotenv.config({
   path: "./.env",
@@ -20,30 +22,12 @@ const port = process.env.PORT || 8002;
 console.log(`server is listening at port --> ${port}`);
 
 
-let isConnected = false;
-
-async function connectToMongo() {
-  try {
-    if (isConnected) {
-      console.log('Already connected to the database.');
-      return;
-    }
-
-    await mongoose.connect(process.env.MONGO_URI);
-    isConnected = true;  // Set to true after successful connection
-    console.log('Connected to MongoDB');
-  } catch (error) {
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((error) => {
     console.error('Error connecting to the database:', error);
-    throw error;
-  }
-}
-
-app.use(async (req, res, next) => {
-  if(!isConnected){
-    await connectToMongo();  // Add await here
-  }
-  next();
-})
+  });
 
 const corsOptions = {
   origin: [
@@ -57,6 +41,9 @@ const corsOptions = {
 
 const buildPath = path.join(__dirname, '../client/dist');
 app.use(express.static(buildPath));
+
+
+app.use(helmet());
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));

@@ -316,6 +316,13 @@ User receives the original file with name and MIME type preserved.
 ### Prerequisites
 - Node.js v18+, MongoDB, Pexels API Key
 
+### Security & deployment (brief)
+- `helmet` is used to set secure HTTP headers.
+- Public file references use a non-sequential `file_id` (UUID) rather than exposing MongoDB `_id`.
+- Server-side logs and HTTP error responses are intentionally sanitized to avoid leaking internals.
+- The backend connects to MongoDB at startup (suitable for managed hosts like Render).
+- Backend tests available under `backend/test/` — run with `npm test`.
+
 ### Backend
 ```bash
 cd backend
@@ -375,12 +382,12 @@ See [LICENSE](LICENSE) file for details.
 
 ---
 
-## Acknowledgments
+## 🙏 Acknowledgments
 
 - **Pexels API** for free stock images
 - **Sharp** library for image processing
 - **MongoDB** for document storage
-- **Vercel & Render** for deployment
+- **Vercel** for deployment
 
 ---
 

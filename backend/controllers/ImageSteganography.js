@@ -26,7 +26,7 @@ async function fetchImageInBuffer(imageurl) {
 async function getEncryptImage(aesKey) {
   try {
     const apiKey = process.env.APIKEY;
-    const apiUrl = "https://api.pexels.com/v1/search?query=dog";
+    const apiUrl = "https://api.pexels.com/v1/search?query=dog&size=small&per_page=50";
     const apiResponse = await fetch(apiUrl, {
       method: "GET",
       headers: { Authorization: apiKey },
@@ -61,8 +61,8 @@ async function getEncryptImage(aesKey) {
 
     return finalPngBuffer;
   } catch (error) {
-    console.error("An error occurred during processing:", error);
-    throw new Error("Failed to encrypt image: " + error.message);
+    console.error("Image steganography processing failed.");
+    throw new Error("Failed to encrypt image.");
   }
 }
 
@@ -81,8 +81,8 @@ async function decryptImage(ImageBuffer) {
       aesKey: decryptedMessage,
     };
   } catch (error) {
-    console.log(error);
-    throw new Error("Failed to decrypt image: " + error.message);
+    console.error("Image decryption failed.");
+    throw new Error("Failed to decrypt image.");
   }
 }
 

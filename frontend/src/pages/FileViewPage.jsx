@@ -64,7 +64,7 @@ export default function FileViewPage({ fileId: fileIdProp }) {
             <div className="inline-block">
               <div className="w-12 h-12 border-2 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin" />
             </div>
-            <p className="text-gray-400 mt-4">Loading encrypted file...</p>
+            <p className="text-gray-400 mt-4">Loading encrypted file... (this is binary-encoded encrypted data and may take a few seconds to stream and render)</p>
           </div>
         ) : error ? (
           <div className="bg-red-500/10 border border-red-500/50 rounded-xl p-6 flex items-start gap-3">

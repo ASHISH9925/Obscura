@@ -24,11 +24,12 @@ async function uploadFile(fileBuffer, mimetype, expiresAt) {
             { upsert: true, new: true }
         );
 
-        return newFile._id; // Return the new file's ID
+        // Return the public, non-sequential file identifier
+        return newFile.file_id;
 
     } catch (error) {
-        console.error('Error in uploadFile service:', error);
-        throw new Error('Failed to save file to database: ' + error.message);
+        console.error('Error saving file to database.');
+        throw new Error('Failed to save file to database');
     }
 }
 
@@ -40,7 +41,8 @@ async function uploadFile(fileBuffer, mimetype, expiresAt) {
  */
 async function retrieveFile(fileId) {
     try {
-        const file = await File.findById(fileId);
+        // fileId is a public `file_id` string (UUID). Query by that field instead
+        const file = await File.findOne({ file_id: fileId });
 
         if (!file) {
             throw new Error('File not found');
@@ -48,10 +50,9 @@ async function retrieveFile(fileId) {
         return file;
 
     } catch (error) {
-        console.error('Error in retrieveFile service:', error);
-        
+        console.error('Error retrieving file.');
         if (error.name === 'CastError') {
-             throw new Error('Invalid file ID format');
+            throw new Error('Invalid file ID format');
         }
         throw error;
     }
@@ -80,7 +81,7 @@ async function retrieveSingleTextFile(req, res) {
         if (error.message === 'Invalid file ID format') {
             return res.status(400).send('Invalid file ID format.');
         }
-        res.status(500).send('Error retrieving file: ' + error.message);
+        res.status(500).send('Error retrieving file.');
     }
 }
 

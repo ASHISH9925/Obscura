@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const { decryptImage } = require("./ImageSteganography"); 
 const { retrieveFile } = require("./FileHandlers");
+const { sanitizeForDownload } = require('../utils/fileUtils');
 
 /**
  * Decrypts a Buffer formatted as IV|ciphertext|authTag using AES-256-GCM.
@@ -65,7 +66,6 @@ function decodeBinaryToFile(data) {
  * @returns {Promise<void>}
  */
 const processFile = async (req, res, next) => {
-  // console.log("File decode controller has been hit!");
 
   if (!req.body.fileUrl) {
     return res.status(400).json({ message: "The file URL is missing." });
@@ -94,17 +94,15 @@ const processFile = async (req, res, next) => {
 
     const originalFile = decodeBinaryToFile(decryptedData);
 
-
-    res.setHeader(
-      "Content-Disposition",
-      `attachment; filename="${originalFile.originalName}"`
-    );
-    res.setHeader("Content-Type", originalFile.mimeType);
+    // Sanitize name and mime via shared util and use RFC5987 encoding for filename
+    const { safeName, safeMime } = sanitizeForDownload(originalFile.originalName, originalFile.mimeType);
+    res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(safeName)}`);
+    res.setHeader('Content-Type', safeMime);
 
     res.send(originalFile.fileBuffer);
 
   } catch (error) {
-    console.error("An error occurred during file decoding:", error.message);
+    console.error("File decoding failed.");
 
     if (error.message.includes("File not found")) {
         return res.status(404).json({ message: "The encrypted file could not be found." });

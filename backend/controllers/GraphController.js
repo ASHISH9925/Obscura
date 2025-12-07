@@ -14,7 +14,7 @@ const getFileTypeStats = async (req, res) => {
             data: stats // already in the form [{ fileType, count }, ...]
         });
     } catch (error) {
-        console.error('Error fetching file type stats:', error);
+            console.error('Error fetching file type stats.');
         res.status(500).json({
             success: false,
             message: 'Error fetching file type statistics'

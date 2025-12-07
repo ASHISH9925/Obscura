@@ -1,6 +1,15 @@
 const mongoose = require('mongoose');
+const { v4: uuidv4 } = require('uuid');
 
 const fileSchema = new mongoose.Schema({
+    // Public, non-sequential file identifier exposed to users
+    file_id: {
+        type: String,
+        required: true,
+        unique: true,
+        index: true,
+        default: () => uuidv4(),
+    },
     data: {
         type: Buffer,
         required: true

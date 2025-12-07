@@ -2,6 +2,7 @@ const fs = require("fs");
 const crypto = require("crypto");
 const { uploadFile } = require("./FileHandlers");
 const { getEncryptImage } = require("./ImageSteganography");
+const { prepareUpload } = require('../utils/fileUtils');
 
 /**
  * Pack filename, MIME type, and file bytes into a single buffer.
@@ -64,10 +65,17 @@ const processFile = async (req, res, next) => {
   if (!req.body.expiryMinutes) {
     return res.status(400).json({ message: "The expiry time is missing." });
   }
+  if(Number(req.body.expiryMinutes) > 10080){
+    return res.status(400).json({ message: "The expiry time cannot exceed 7 days (10080 minutes)." });
+  }
   try {
     const inputFileBuffer = req.file.buffer;
-    const originalFileName = req.file.originalname;
-    const mimeType = req.file.mimetype;
+    
+    // sanitize and get original filename and mime type
+    const { filename: originalFileName, mime: mimeType } = await prepareUpload(
+      inputFileBuffer,
+      req.file.mimetype
+    );
    
     const expiryMinutes = Number(req.body.expiryMinutes);
     if (!Number.isFinite(expiryMinutes) || expiryMinutes <= 0) {
@@ -107,7 +115,7 @@ const processFile = async (req, res, next) => {
     });
 
   } catch (error) {
-    console.error("An error occurred during file processing:", error);
+    console.error("File processing failed.");
     next(error);
   }
 };

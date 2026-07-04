@@ -29,13 +29,21 @@ mongoose
     console.error('Error connecting to the database:', error);
   });
 
+const allowedOrigins = [
+  "http://localhost:5173", 
+  "http://localhost:3000", 
+  "https:obscura.ashishcodes.com",
+  /^https:\/\/(.*\.)?ashishcodes\.com$/, // Matches ashishcodes.com and all its subdomains
+  /^https:\/\/.*\.vercel\.app$/, // Matches all Vercel subdomains/deployments
+];
+
+if (process.env.ALLOWED_ORIGINS) {
+  const envOrigins = process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim());
+  allowedOrigins.push(...envOrigins);
+}
+
 const corsOptions = {
-  origin: [
-    "http://localhost:5173", 
-    "http://localhost:3000", 
-    /^https:\/\/test-deployment.*\.vercel\.app$/, 
-    /^https:\/\/obscura.*\.vercel\.app$/          
-  ],
+  origin: allowedOrigins,
   credentials: true
 };
 
